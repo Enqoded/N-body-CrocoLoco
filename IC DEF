@@ -20,7 +20,7 @@ r_max_kwad = 20
 r_min_kwad = 15
 AU = 1.496*10**11
 
-def startvalue_generator(N, r_max_kwad, r_min_kwad):
+def startvalue_generator(N):
     x_list = []
     y_list = []
     prop_non_plot_list_start = []
@@ -40,6 +40,33 @@ def startvalue_generator(N, r_max_kwad, r_min_kwad):
             prop_non_plot_list_start.append(prop_non_plot_tuple)
             N_succeed = N_succeed + 1
     return x_list,y_list, prop_non_plot_list_start
+    
+#################### 2D plot starts here ##########################
+#N = 1000
+#properties = startvalue_generator(N)
+#x_list = []
+#y_list = []
+#z_list = []
+#for i in range(N):
+#    x = properties[i][0]
+#    x_list.append(x*AU)
+#    y = properties[i][1]
+#    y_list.append(y*AU)
+#    z = properties[i][3][0]
+#    z_list.append(z*AU)
+
+    
+
+#print 'The number of astroids in this figure = %.5g' % N
+#plt.scatter(x_list, y_list, 1, color='black', label='Asteroid')
+#plt.scatter([5*AU], [0], 25, color='brown', label='Jupiter')
+#plt.scatter([0], [0], 250, color='yellow', label='Sun')
+#plt.title('Asteroid belt < 5 AU')
+#plt.xlabel('Distance x[m]')
+#plt.ylabel('Distance y[m]')
+#plt.legend(loc=3, scatterpoints=1)
+#plt.show()
+#################### 2D plot ends here ##########################
 
 
 def euler_cromer(x_last_plot,y_last_plot, pos_vel_non_plot):
@@ -75,9 +102,9 @@ def euler_cromer(x_last_plot,y_last_plot, pos_vel_non_plot):
     return x_new, y_new, pos_vel_new_non_plot
 
 
-def asteroids(tijd, r_max_kwad, r_min_kwad):
+def asteroids(tijd):
     fig = plt.figure()
-    x_list, y_list, pos_vel_non_plot = startvalue_generator(N, r_max_kwad, r_min_kwad)
+    x_list, y_list, pos_vel_non_plot = startvalue_generator(N)
     for t in range(tijd):        
         for deeltje in range(len(x_list)):
             x_last_plot = x_list[deeltje]
@@ -101,6 +128,28 @@ def asteroids(tijd, r_max_kwad, r_min_kwad):
                     #break
     return 'Done'
 
-print asteroids(tijd, r_max_kwad, r_min_kwad)
+print asteroids(tijd)
 
+#################### 3D plot starts here ##########################
+#from mpl_toolkits.mplot3d import Axes3D
 
+#fig = plt.figure()
+#ax = fig.add_subplot(111, projection='3d')
+
+#ax.scatter(x_list, y_list, z_list, s=1, color='black', label='Asteroid')
+#ax.scatter([5*AU], [0], [0], s=25, color='brown', label='Jupiter')
+#ax.scatter([0], [0], [0], s=250, color='yellow', label='Sun')
+#ticks = [-5*AU, 0, 5*AU]
+#ax.set_xlabel('x[m]')
+#ax.set_ylabel('y[m]')
+#ax.set_zlabel('z[m]')
+#ax.set_xbound(-5*AU, 5*AU)
+#ax.set_ybound(-5*AU, 5*AU)
+#ax.set_zbound(-5*AU, 5*AU)
+#ax.set_xticks(ticks)
+#ax.set_yticks(ticks)
+#ax.set_zticks(ticks)
+
+#plt.legend(loc=3, scatterpoints=1)
+#plt.show()
+#################### 3D plot ends here ##########################

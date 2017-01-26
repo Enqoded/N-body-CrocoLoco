@@ -1,2 +1,106 @@
-print 'Frank is raar'
-print 'Ik ook not'
+import random
+import numpy as np
+import matplotlib.pyplot as plt
+import time
+from IPython import display
+import pylab as pl
+%matplotlib inline
+
+
+
+G = 6.67*10**(-11)
+m_sun = 2*10**30
+m_jup = 1.898*10**27
+pos_jup = 10,0,0
+pos_sun = 0,0,0
+dt = 1
+N = 1000
+tijd = 365
+r_max_kwad = 20
+r_min_kwad = 15
+AU = 1.496*10**11
+
+def startvalue_generator(N, r_max_kwad, r_min_kwad):
+    x_list = []
+    y_list = []
+    prop_non_plot_list_start = []
+    N_succeed = 0
+    while N_succeed < N:
+        x = random.uniform(-5, 5)
+        y = random.uniform(-5, 5)
+        if x**2 + y**2 <= r_max_kwad and x**2 + y**2 >= r_min_kwad:
+            z = random.uniform(-0.1, 0.1)
+            v_x = random.uniform(-1, 1)
+            v_y = random.uniform(-1, 1)
+            v_z = random.uniform(-1, 1)
+            props_non_plot = [z, v_x, v_y, v_z]
+            x_list.append(x)
+            y_list.append(y)
+            prop_non_plot_tuple = tuple(props_non_plot)
+            prop_non_plot_list_start.append(prop_non_plot_tuple)
+            N_succeed = N_succeed + 1
+    return x_list,y_list, prop_non_plot_list_start
+
+
+def euler_cromer(x_last_plot,y_last_plot, pos_vel_non_plot):
+    '''
+    Input: 
+    Output: 
+    How: 
+    '''
+    x_last = x_last_plot
+    y_last = y_last_plot
+    z_last = pos_vel_non_plot[0]
+    vx_last = pos_vel_non_plot[1]
+    vy_last = pos_vel_non_plot[2]
+    vz_last = pos_vel_non_plot[3]
+    x_sun, y_sun, z_sun = pos_sun
+    x_jup, y_jup, z_jup = pos_jup
+
+    dist_ast_to_sun = np.sqrt((x_last - x_sun)**2 + (y_last - y_sun)**2 + (z_last - z_sun)**2)
+    dist_ast_to_jup = np.sqrt((x_last - x_jup)**2 + (y_last - y_jup)**2 + (z_last - z_jup)**2)
+    
+    a_x = -G * m_sun * (x_last - x_sun)/(dist_ast_to_sun**3) - G * m_jup * (x_last - x_jup)/(dist_ast_to_jup**3)
+    a_y = -G * m_sun * (y_last - y_sun)/(dist_ast_to_sun**3) - G * m_jup * (y_last - y_jup)/(dist_ast_to_jup**3)
+    a_z = -G * m_sun * (z_last - z_sun)/(dist_ast_to_sun**3) - G * m_jup * (z_last - z_jup)/(dist_ast_to_jup**3)
+
+    vx_new = vx_last + a_x * dt
+    vy_new = vy_last + a_y * dt
+    vz_new = vz_last + a_z * dt
+    x_new = x_last + vx_new * dt
+    y_new = y_last + vy_new * dt
+    z_new = z_last + vz_new * dt
+    
+    pos_vel_new_non_plot = tuple([z_new, vx_new, vy_new, vz_new])
+    return x_new, y_new, pos_vel_new_non_plot
+
+
+def asteroids(tijd, r_max_kwad, r_min_kwad):
+    fig = plt.figure()
+    x_list, y_list, pos_vel_non_plot = startvalue_generator(N, r_max_kwad, r_min_kwad)
+    for t in range(tijd):        
+        for deeltje in range(len(x_list)):
+            x_last_plot = x_list[deeltje]
+            y_last_plot = y_list[deeltje]
+            pos_vel_last_non_plot = pos_vel_non_plot[deeltje]
+            x_new, y_new, pos_vel_new_non_plot = euler_cromer(x_last_plot, y_last_plot, pos_vel_last_non_plot)
+            x_list[deeltje] = x_new
+            y_list[deeltje] = y_new
+            pos_vel_non_plot[deeltje] = pos_vel_new_non_plot
+        if t % 30 == 0:
+            #while True:
+                #try:
+            fig.clear()
+            pl.plot(x_list,y_list,'ro')
+            display.display(pl.gcf())
+
+            display.clear_output(wait=True)
+            
+            time.sleep(1.0)
+                #except KeyboardInterrupt:
+                    #break
+    return 'Done'
+
+print asteroids(tijd, r_max_kwad, r_min_kwad)
+
+
